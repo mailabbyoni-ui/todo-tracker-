@@ -118,13 +118,13 @@ const SEED_TASKS = [
   "Data Gbolahan",
   "Nyosi follow up",
   "Done",
-].map((title, i) => ({
-  id: (1700000000000 + i * 1000).toString(),
+].map((title, i, arr) => ({
+  id: (1700000000000 + (arr.length - i) * 1000).toString(),
   title,
   notes: '',
   column: 'done',
-  createdAt: new Date(1700000000000 + i * 1000).toISOString(),
-  completedAt: new Date(1700000000000 + i * 1000).toISOString(),
+  createdAt: new Date(1700000000000 + (arr.length - i) * 1000).toISOString(),
+  completedAt: new Date(1700000000000 + (arr.length - i) * 1000).toISOString(),
 }));
 
 function loadTasks() {
