@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Todo Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>My Todo Tracker</h1>
+  </header>
+
+  <main class="board">
+
+    <div class="column" id="col-not-started">
+      <div class="column-header">
+        <span class="column-dot dot-not-started"></span>
+        <h2>Not Started</h2>
+        <span class="count" id="count-not-started">0</span>
+      </div>
+      <button class="add-btn" onclick="openModal('not-started')">+ Add Task</button>
+      <ul class="task-list" id="list-not-started"></ul>
+    </div>
+
+    <div class="column" id="col-in-progress">
+      <div class="column-header">
+        <span class="column-dot dot-in-progress"></span>
+        <h2>In Progress</h2>
+        <span class="count" id="count-in-progress">0</span>
+      </div>
+      <button class="add-btn" onclick="openModal('in-progress')">+ Add Task</button>
+      <ul class="task-list" id="list-in-progress"></ul>
+    </div>
+
+    <div class="column" id="col-done">
+      <div class="column-header">
+        <span class="column-dot dot-done"></span>
+        <h2>Done</h2>
+        <span class="count" id="count-done">0</span>
+      </div>
+      <ul class="task-list" id="list-done"></ul>
+    </div>
+
+    <div class="column" id="col-wont-do">
+      <div class="column-header">
+        <span class="column-dot dot-wont-do"></span>
+        <h2>Won't Do</h2>
+        <span class="count" id="count-wont-do">0</span>
+      </div>
+      <ul class="task-list" id="list-wont-do"></ul>
+    </div>
+
+  </main>
+
+  <!-- Add Task Modal -->
+  <div class="modal-overlay" id="modal" onclick="closeModalOnOverlay(event)">
+    <div class="modal">
+      <h3>Add New Task</h3>
+      <input type="text" id="task-input" placeholder="What needs to be done?" maxlength="200" />
+      <textarea id="task-notes" placeholder="Notes (optional)" maxlength="500"></textarea>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-add" onclick="addTask()">Add Task</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
