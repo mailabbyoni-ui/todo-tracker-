@@ -397,7 +397,7 @@ function render() {
 
     if (col === 'done') {
       colTasks.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
-    } else if (col === 'not-started' || col === 'in-progress') {
+    } else if (col === 'not-started' || col === 'in-progress' || col === 'wont-do') {
       colTasks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
 
