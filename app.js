@@ -274,9 +274,53 @@ async function moveTask(id, newColumn) {
   await tasksCol.doc(id).update(update);
 }
 
-// ── Delete Task ───────────────────────────────────────────
+// ── Delete Task (with undo) ───────────────────────────────
+let undoTimer = null;
+let pendingDelete = null;
+
 async function deleteTask(id) {
-  await tasksCol.doc(id).delete();
+  const task = tasks.find(t => t.id === id);
+  if (!task) return;
+
+  // Cancel any previous pending delete
+  if (undoTimer) {
+    clearTimeout(undoTimer);
+    if (pendingDelete) await tasksCol.doc(pendingDelete.id).delete();
+  }
+
+  pendingDelete = task;
+
+  // Optimistically remove from UI
+  tasks = tasks.filter(t => t.id !== id);
+  render();
+  showUndoToast(task.title);
+
+  // Permanently delete after 5 seconds
+  undoTimer = setTimeout(async () => {
+    await tasksCol.doc(id).delete();
+    pendingDelete = null;
+    undoTimer = null;
+  }, 5000);
+}
+
+function undoDelete() {
+  if (!pendingDelete) return;
+  clearTimeout(undoTimer);
+  tasksCol.doc(pendingDelete.id).set(pendingDelete);
+  pendingDelete = null;
+  undoTimer = null;
+  hideUndoToast();
+}
+
+function showUndoToast(title) {
+  const toast = document.getElementById('undo-toast');
+  document.getElementById('undo-toast-msg').textContent = `"${title.length > 30 ? title.slice(0, 30) + '…' : title}" deleted`;
+  toast.classList.add('show');
+  setTimeout(hideUndoToast, 5000);
+}
+
+function hideUndoToast() {
+  document.getElementById('undo-toast').classList.remove('show');
 }
 
 // ── Format Date ───────────────────────────────────────────

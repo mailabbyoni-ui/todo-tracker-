@@ -318,6 +318,46 @@ header h1 {
   padding: 20px 0;
 }
 
+/* Undo Toast */
+#undo-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #1a1a2e;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  z-index: 9998;
+  transition: transform 0.25s ease;
+  white-space: nowrap;
+}
+
+#undo-toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+#undo-toast button {
+  background: #6366f1;
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 0.825rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+#undo-toast button:hover {
+  background: #4f46e5;
+}
+
 /* Password Screen */
 #password-screen {
   position: fixed;
