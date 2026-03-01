@@ -459,8 +459,15 @@ header h1 {
   }
 
   .column {
+    width: 85vw;
     min-width: 85vw;
+    max-width: 85vw;
     flex-shrink: 0;
     scroll-snap-align: start;
+    overflow: hidden;
+  }
+
+  .task-actions {
+    flex-wrap: wrap;
   }
 }
