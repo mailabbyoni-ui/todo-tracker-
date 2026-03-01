@@ -265,6 +265,7 @@ function moveTask(id, newColumn) {
   if (!task) return;
 
   task.column = newColumn;
+  task.seeded = false;
 
   if (newColumn === 'done') {
     task.completedAt = new Date().toISOString();
