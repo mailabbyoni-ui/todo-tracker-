@@ -123,6 +123,7 @@ const SEED_TASKS = [
   title,
   notes: '',
   column: 'done',
+  seeded: true,
   createdAt: new Date(1700000000000 + (arr.length - i) * 1000).toISOString(),
   completedAt: new Date(1700000000000 + (arr.length - i) * 1000).toISOString(),
 }));
@@ -285,7 +286,7 @@ function buildTaskCard(task) {
     ? `<div class="task-notes">${escapeHTML(task.notes)}</div>`
     : '';
 
-  const timestampHTML = task.completedAt
+  const timestampHTML = task.completedAt && !task.seeded
     ? `<div class="task-timestamp">Completed ${formatDate(task.completedAt)}</div>`
     : '';
 
