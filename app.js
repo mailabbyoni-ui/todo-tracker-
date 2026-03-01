@@ -282,31 +282,29 @@ async function deleteTask(id) {
   const task = tasks.find(t => t.id === id);
   if (!task) return;
 
-  // Cancel any previous pending delete
   if (undoTimer) {
     clearTimeout(undoTimer);
-    if (pendingDelete) await tasksCol.doc(pendingDelete.id).delete();
+    undoTimer = null;
   }
 
   pendingDelete = task;
 
-  // Optimistically remove from UI
-  tasks = tasks.filter(t => t.id !== id);
-  render();
+  // Delete from Firebase immediately so refresh doesn't bring it back
+  await tasksCol.doc(id).delete();
   showUndoToast(task.title);
 
-  // Permanently delete after 5 seconds
-  undoTimer = setTimeout(async () => {
-    await tasksCol.doc(id).delete();
+  // After 5 seconds, close the undo window
+  undoTimer = setTimeout(() => {
     pendingDelete = null;
     undoTimer = null;
+    hideUndoToast();
   }, 5000);
 }
 
-function undoDelete() {
+async function undoDelete() {
   if (!pendingDelete) return;
   clearTimeout(undoTimer);
-  tasksCol.doc(pendingDelete.id).set(pendingDelete);
+  await tasksCol.doc(pendingDelete.id).set(pendingDelete);
   pendingDelete = null;
   undoTimer = null;
   hideUndoToast();
