@@ -61,12 +61,12 @@
   <!-- Add Task Modal -->
   <div class="modal-overlay" id="modal" onclick="closeModalOnOverlay(event)">
     <div class="modal">
-      <h3>Add New Task</h3>
+      <h3 id="modal-title">Add New Task</h3>
       <input type="text" id="task-input" placeholder="What needs to be done?" maxlength="200" />
       <textarea id="task-notes" placeholder="Notes (optional)" maxlength="500"></textarea>
       <div class="modal-actions">
         <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-        <button class="btn-add" onclick="addTask()">Add Task</button>
+        <button class="btn-add" id="modal-submit-btn" onclick="addTask()">Add Task</button>
       </div>
     </div>
   </div>

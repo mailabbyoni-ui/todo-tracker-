@@ -205,11 +205,22 @@ header h1 {
   background: #f0f2f5;
 }
 
-.btn-delete {
+.btn-edit {
   background: transparent;
   color: #d1d5db;
   border-color: #e5e7eb;
   margin-left: auto;
+}
+.btn-edit:hover {
+  background: #eff6ff;
+  color: #6366f1;
+  border-color: #a5b4fc;
+}
+
+.btn-delete {
+  background: transparent;
+  color: #d1d5db;
+  border-color: #e5e7eb;
 }
 .btn-delete:hover {
   background: #fee2e2;

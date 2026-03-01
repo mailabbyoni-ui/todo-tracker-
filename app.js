@@ -215,16 +215,36 @@ function startListening() {
 }
 
 // ── Modal ─────────────────────────────────────────────────
+let editingTaskId = null;
+
 function openModal(column) {
+  editingTaskId = null;
   activeColumn = column;
-  document.getElementById('modal').classList.add('open');
+  document.getElementById('modal-title').textContent = 'Add New Task';
+  document.getElementById('modal-submit-btn').textContent = 'Add Task';
+  document.getElementById('modal-submit-btn').onclick = addTask;
   document.getElementById('task-input').value = '';
   document.getElementById('task-notes').value = '';
+  document.getElementById('modal').classList.add('open');
+  setTimeout(() => document.getElementById('task-input').focus(), 50);
+}
+
+function openEditModal(id) {
+  const task = tasks.find(t => t.id === id);
+  if (!task) return;
+  editingTaskId = id;
+  document.getElementById('modal-title').textContent = 'Edit Task';
+  document.getElementById('modal-submit-btn').textContent = 'Save';
+  document.getElementById('modal-submit-btn').onclick = saveEdit;
+  document.getElementById('task-input').value = task.title;
+  document.getElementById('task-notes').value = task.notes || '';
+  document.getElementById('modal').classList.add('open');
   setTimeout(() => document.getElementById('task-input').focus(), 50);
 }
 
 function closeModal() {
   document.getElementById('modal').classList.remove('open');
+  editingTaskId = null;
 }
 
 function closeModalOnOverlay(e) {
@@ -235,7 +255,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeModal();
   if (e.key === 'Enter' && document.getElementById('modal').classList.contains('open')) {
     if (document.activeElement !== document.getElementById('task-notes')) {
-      addTask();
+      editingTaskId ? saveEdit() : addTask();
     }
   }
 });
@@ -272,6 +292,15 @@ async function moveTask(id, newColumn) {
     completedAt: newColumn === 'done' ? new Date().toISOString() : null,
   };
   await tasksCol.doc(id).update(update);
+}
+
+// ── Save Edit ─────────────────────────────────────────────
+async function saveEdit() {
+  const title = document.getElementById('task-input').value.trim();
+  if (!title || !editingTaskId) return;
+  const notes = document.getElementById('task-notes').value.trim();
+  closeModal();
+  await tasksCol.doc(editingTaskId).update({ title, notes });
 }
 
 // ── Delete Task (with undo) ───────────────────────────────
@@ -356,6 +385,7 @@ function buildTaskCard(task) {
   if (col !== 'wont-do') {
     actions.push(`<button class="btn-move-wont-do" onclick="moveTask('${task.id}', 'wont-do')">Won't Do</button>`);
   }
+  actions.push(`<button class="btn-edit" onclick="openEditModal('${task.id}')" title="Edit task">✎</button>`);
   actions.push(`<button class="btn-delete" onclick="deleteTask('${task.id}')" title="Delete task">✕</button>`);
 
   const notesHTML = task.notes
