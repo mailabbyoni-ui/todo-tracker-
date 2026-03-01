@@ -71,5 +71,41 @@
   </div>
 
   <script src="app.js"></script>
+
+  <!-- Password Screen -->
+  <div id="password-screen">
+    <div class="password-box">
+      <h2>My Todo Tracker</h2>
+      <input type="password" id="password-input" placeholder="Enter password" />
+      <p id="password-error"></p>
+      <button onclick="checkPassword()">Unlock</button>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      if (sessionStorage.getItem('auth') === 'true') {
+        document.getElementById('password-screen').style.display = 'none';
+      } else {
+        document.body.style.overflow = 'hidden';
+      }
+      document.getElementById('password-input').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') checkPassword();
+      });
+    })();
+
+    function checkPassword() {
+      const input = document.getElementById('password-input').value;
+      if (input === '2319') {
+        sessionStorage.setItem('auth', 'true');
+        document.getElementById('password-screen').style.display = 'none';
+        document.body.style.overflow = '';
+      } else {
+        document.getElementById('password-error').textContent = 'Incorrect password. Try again.';
+        document.getElementById('password-input').value = '';
+        document.getElementById('password-input').focus();
+      }
+    }
+  </script>
 </body>
 </html>
