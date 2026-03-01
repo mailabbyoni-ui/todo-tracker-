@@ -127,15 +127,35 @@ const SEED_TASKS = [
   completedAt: new Date(1700000000000 + (arr.length - i) * 1000).toISOString(),
 }));
 
+const WONT_DO_TASKS = [
+  "2024 learning&devt-commonsku",
+  "Chubby: Claim business on Google",
+  "CIBC wire transfer",
+  "Black out curtains",
+  "Matchroom greatest showmen Netflix",
+  "2025 - learning& devt-commonsku",
+  "Luxury Academy - YouTube",
+  "Google Cloud Certification exam",
+].map((title, i, arr) => ({
+  id: (1600000000000 + (arr.length - i) * 1000).toString(),
+  title,
+  notes: '',
+  column: 'wont-do',
+  createdAt: new Date(1600000000000 + (arr.length - i) * 1000).toISOString(),
+  completedAt: null,
+}));
+
+const ALL_SEED_TASKS = [...SEED_TASKS, ...WONT_DO_TASKS];
+
 function loadTasks() {
   try {
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (stored && stored.length > 0) return stored;
-    // First load: seed with existing done tasks
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED_TASKS));
-    return SEED_TASKS;
+    // First load: seed with existing tasks
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(ALL_SEED_TASKS));
+    return ALL_SEED_TASKS;
   } catch {
-    return SEED_TASKS;
+    return ALL_SEED_TASKS;
   }
 }
 
