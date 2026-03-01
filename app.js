@@ -147,14 +147,26 @@ const WONT_DO_TASKS = [
 }));
 
 const ALL_SEED_TASKS = [...SEED_TASKS, ...WONT_DO_TASKS];
+const SEED_VERSION = '5';
+const VERSION_KEY = 'todo-tracker-seed-version';
 
 function loadTasks() {
   try {
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (stored && stored.length > 0) return stored;
-    // First load: seed with existing tasks
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(ALL_SEED_TASKS));
-    return ALL_SEED_TASKS;
+    const storedVersion = localStorage.getItem(VERSION_KEY);
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+    // Keep any tasks the user created themselves (not seeded)
+    const userTasks = stored.filter(t => !t.seeded);
+
+    if (storedVersion !== SEED_VERSION) {
+      // Seed data has changed — replace seeded tasks, keep user tasks
+      const merged = [...ALL_SEED_TASKS, ...userTasks];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      localStorage.setItem(VERSION_KEY, SEED_VERSION);
+      return merged;
+    }
+
+    return stored.length > 0 ? stored : ALL_SEED_TASKS;
   } catch {
     return ALL_SEED_TASKS;
   }
