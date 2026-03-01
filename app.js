@@ -1,6 +1,18 @@
-// ── Storage ──────────────────────────────────────────────
-const STORAGE_KEY = 'todo-tracker-tasks';
+// ── Firebase Setup ────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyA04K4OFv0L1XAZFOicaHKvMo6LSCSASNU",
+  authDomain: "todo-tracker-37dd4.firebaseapp.com",
+  projectId: "todo-tracker-37dd4",
+  storageBucket: "todo-tracker-37dd4.firebasestorage.app",
+  messagingSenderId: "692033845978",
+  appId: "1:692033845978:web:28b632820ddb1c51c683e3"
+};
 
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const tasksCol = db.collection('tasks');
+
+// ── Seed Data ─────────────────────────────────────────────
 const SEED_TASKS = [
   "Flights to Halifax",
   "Call Dapo",
@@ -142,6 +154,7 @@ const WONT_DO_TASKS = [
   title,
   notes: '',
   column: 'wont-do',
+  seeded: true,
   createdAt: new Date(1600000000000 + (arr.length - i) * 1000).toISOString(),
   completedAt: null,
 }));
@@ -175,38 +188,31 @@ const NOT_STARTED_TASKS = [
 }));
 
 const ALL_SEED_TASKS = [...SEED_TASKS, ...WONT_DO_TASKS, ...NOT_STARTED_TASKS];
-const SEED_VERSION = '6';
-const VERSION_KEY = 'todo-tracker-seed-version';
 
-function loadTasks() {
-  try {
-    const storedVersion = localStorage.getItem(VERSION_KEY);
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+// ── State ─────────────────────────────────────────────────
+let tasks = [];
+let activeColumn = 'not-started';
 
-    // Keep any tasks the user created themselves (not seeded)
-    const userTasks = stored.filter(t => !t.seeded);
-
-    if (storedVersion !== SEED_VERSION) {
-      // Seed data has changed — replace seeded tasks, keep user tasks
-      const merged = [...ALL_SEED_TASKS, ...userTasks];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-      localStorage.setItem(VERSION_KEY, SEED_VERSION);
-      return merged;
-    }
-
-    return stored.length > 0 ? stored : ALL_SEED_TASKS;
-  } catch {
-    return ALL_SEED_TASKS;
+// ── Seed Firestore if empty ───────────────────────────────
+async function seedIfEmpty() {
+  const snapshot = await tasksCol.limit(1).get();
+  if (snapshot.empty) {
+    const batch = db.batch();
+    ALL_SEED_TASKS.forEach(task => {
+      const ref = tasksCol.doc(task.id);
+      batch.set(ref, task);
+    });
+    await batch.commit();
   }
 }
 
-function saveTasks() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+// ── Real-time listener ────────────────────────────────────
+function startListening() {
+  tasksCol.onSnapshot(snapshot => {
+    tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    render();
+  });
 }
-
-// ── State ─────────────────────────────────────────────────
-let tasks = loadTasks();
-let activeColumn = 'not-started';
 
 // ── Modal ─────────────────────────────────────────────────
 function openModal(column) {
@@ -225,7 +231,6 @@ function closeModalOnOverlay(e) {
   if (e.target === document.getElementById('modal')) closeModal();
 }
 
-// Close modal with Escape key
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeModal();
   if (e.key === 'Enter' && document.getElementById('modal').classList.contains('open')) {
@@ -236,7 +241,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ── Add Task ──────────────────────────────────────────────
-function addTask() {
+async function addTask() {
   const title = document.getElementById('task-input').value.trim();
   if (!title) {
     document.getElementById('task-input').focus();
@@ -244,44 +249,34 @@ function addTask() {
   }
 
   const notes = document.getElementById('task-notes').value.trim();
+  const id = Date.now().toString();
   const task = {
-    id: Date.now().toString(),
+    id,
     title,
     notes,
     column: activeColumn,
+    seeded: false,
     createdAt: new Date().toISOString(),
     completedAt: null,
   };
 
-  tasks.push(task);
-  saveTasks();
   closeModal();
-  render();
+  await tasksCol.doc(id).set(task);
 }
 
 // ── Move Task ─────────────────────────────────────────────
-function moveTask(id, newColumn) {
-  const task = tasks.find(t => t.id === id);
-  if (!task) return;
-
-  task.column = newColumn;
-  task.seeded = false;
-
-  if (newColumn === 'done') {
-    task.completedAt = new Date().toISOString();
-  } else {
-    task.completedAt = null;
-  }
-
-  saveTasks();
-  render();
+async function moveTask(id, newColumn) {
+  const update = {
+    column: newColumn,
+    seeded: false,
+    completedAt: newColumn === 'done' ? new Date().toISOString() : null,
+  };
+  await tasksCol.doc(id).update(update);
 }
 
 // ── Delete Task ───────────────────────────────────────────
-function deleteTask(id) {
-  tasks = tasks.filter(t => t.id !== id);
-  saveTasks();
-  render();
+async function deleteTask(id) {
+  await tasksCol.doc(id).delete();
 }
 
 // ── Format Date ───────────────────────────────────────────
@@ -305,8 +300,6 @@ function formatDate(isoString) {
 // ── Build Task Card HTML ──────────────────────────────────
 function buildTaskCard(task) {
   const col = task.column;
-
-  // Action buttons depending on which column the task is in
   const actions = [];
 
   if (col !== 'not-started') {
@@ -341,7 +334,7 @@ function buildTaskCard(task) {
   `;
 }
 
-// ── Escape HTML to prevent XSS ────────────────────────────
+// ── Escape HTML ───────────────────────────────────────────
 function escapeHTML(str) {
   return str
     .replace(/&/g, '&amp;')
@@ -358,7 +351,6 @@ function render() {
   columns.forEach(col => {
     let colTasks = tasks.filter(t => t.column === col);
 
-    // Done column: newest completed at top
     if (col === 'done') {
       colTasks.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
     }
@@ -377,4 +369,4 @@ function render() {
 }
 
 // ── Init ──────────────────────────────────────────────────
-render();
+seedIfEmpty().then(() => startListening());
