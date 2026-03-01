@@ -18,7 +18,7 @@ Previously managed tasks in iOS Notes using four manual columns: Not Started, In
 ### Task Management
 - Add tasks with a title and optional notes
 - Move tasks between any of the four columns
-- Delete tasks with a 5-second undo window
+- Delete tasks with a 5-second undo window — deleted immediately from database, restored if undone
 - Task counts displayed per column
 
 ### Columns
@@ -39,9 +39,19 @@ Previously managed tasks in iOS Notes using four manual columns: Not Started, In
 - No login required
 
 ### Security
-- Password protected (client-side)
+- Password protected (client-side) — session persists until browser is closed
 - Firebase API key restricted to GitHub Pages domain only
 - Firestore rules set to allow read/write with no expiry
+
+### Mobile Experience
+- Horizontal swipe between columns (Trello-style)
+- Columns snap into place when swiping
+- All columns maintain equal width on mobile
+- Fully responsive — works on desktop, tablet, and phone
+
+### Branding
+- Poppins font for the header
+- ✅ favicon shown in browser tab
 
 ---
 
