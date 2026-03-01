@@ -146,8 +146,36 @@ const WONT_DO_TASKS = [
   completedAt: null,
 }));
 
-const ALL_SEED_TASKS = [...SEED_TASKS, ...WONT_DO_TASKS];
-const SEED_VERSION = '5';
+const NOT_STARTED_TASKS = [
+  "Skintags/Syringoma under eye",
+  "2026 - learning& devt-commonsku",
+  "Modern Data Course - Part II",
+  "After Life Documentation",
+  "Reach out to Denike Oyetunde for BACS",
+  "Adapalene",
+  "Renaitre - Content for Ibukun35",
+  "Renaitre - SBS Grant",
+  "X - Ray",
+  "Yetlaw refund 400 CAD",
+  "BACS < ff up on fundraising",
+  "Sterling bank account",
+  "Find old hard drives",
+  "Find jewelry",
+  "Call Tasios Dentist",
+  "File Annual Return",
+  "Book G test",
+].map((title, i, arr) => ({
+  id: (1500000000000 + (arr.length - i) * 1000).toString(),
+  title,
+  notes: '',
+  column: 'not-started',
+  seeded: true,
+  createdAt: new Date(1500000000000 + (arr.length - i) * 1000).toISOString(),
+  completedAt: null,
+}));
+
+const ALL_SEED_TASKS = [...SEED_TASKS, ...WONT_DO_TASKS, ...NOT_STARTED_TASKS];
+const SEED_VERSION = '6';
 const VERSION_KEY = 'todo-tracker-seed-version';
 
 function loadTasks() {
