@@ -464,10 +464,21 @@ header h1 {
     max-width: 85vw;
     flex-shrink: 0;
     scroll-snap-align: start;
-    overflow: hidden;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
+  .task-card {
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .task-actions {
     flex-wrap: wrap;
+  }
+
+  .task-actions button {
+    font-size: 0.65rem;
+    padding: 3px 7px;
   }
 }
