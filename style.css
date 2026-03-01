@@ -439,13 +439,28 @@ header h1 {
 
 /* Responsive: mobile */
 @media (max-width: 540px) {
-  .board {
-    grid-template-columns: 1fr;
-    padding: 12px;
-    gap: 12px;
-  }
-
   header h1 {
     font-size: 1.2rem;
+  }
+
+  .board {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .board::-webkit-scrollbar {
+    display: none;
+  }
+
+  .column {
+    min-width: 85vw;
+    flex-shrink: 0;
+    scroll-snap-align: start;
   }
 }
