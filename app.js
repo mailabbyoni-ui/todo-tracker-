@@ -299,8 +299,9 @@ async function saveEdit() {
   const title = document.getElementById('task-input').value.trim();
   if (!title || !editingTaskId) return;
   const notes = document.getElementById('task-notes').value.trim();
+  const id = editingTaskId;
   closeModal();
-  await tasksCol.doc(editingTaskId).update({ title, notes });
+  await tasksCol.doc(id).update({ title, notes });
 }
 
 // ── Delete Task (with undo) ───────────────────────────────
