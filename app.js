@@ -286,11 +286,15 @@ async function addTask() {
 
 // ── Move Task ─────────────────────────────────────────────
 async function moveTask(id, newColumn) {
+  const now = new Date().toISOString();
   const update = {
     column: newColumn,
     seeded: false,
-    completedAt: newColumn === 'done' ? new Date().toISOString() : null,
+    completedAt: newColumn === 'done' ? now : null,
   };
+  if (newColumn !== 'done') {
+    update.createdAt = now;
+  }
   await tasksCol.doc(id).update(update);
 }
 
