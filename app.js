@@ -9,6 +9,7 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 const db = firebase.firestore();
 const tasksCol = db.collection('tasks');
 
@@ -17,12 +18,52 @@ let tasks = [];
 let activeColumn = 'not-started';
 
 // ── Real-time listener ────────────────────────────────────
+let stopListening = null;
+
 function startListening() {
-  tasksCol.onSnapshot(snapshot => {
+  stopListening = tasksCol.onSnapshot(snapshot => {
     tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     render();
   });
 }
+
+// ── Sign in ───────────────────────────────────────────────
+async function signIn() {
+  const email = document.getElementById('email-input').value.trim();
+  const password = document.getElementById('password-input').value;
+  const error = document.getElementById('password-error');
+  error.textContent = '';
+  try {
+    await auth.signInWithEmailAndPassword(email, password);
+  } catch (e) {
+    error.textContent = 'Incorrect email or password. Try again.';
+    document.getElementById('password-input').value = '';
+    document.getElementById('password-input').focus();
+  }
+}
+
+function signOut() {
+  auth.signOut();
+}
+
+document.getElementById('password-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') signIn();
+});
+
+auth.onAuthStateChanged(user => {
+  const screen = document.getElementById('password-screen');
+  if (user) {
+    screen.style.display = 'none';
+    document.body.style.overflow = '';
+    if (!stopListening) startListening();
+  } else {
+    if (stopListening) { stopListening(); stopListening = null; }
+    tasks = [];
+    render();
+    screen.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+});
 
 // ── Modal ─────────────────────────────────────────────────
 let editingTaskId = null;
@@ -257,5 +298,3 @@ function render() {
   });
 }
 
-// ── Init ──────────────────────────────────────────────────
-startListening();

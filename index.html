@@ -14,6 +14,7 @@
 
   <header>
     <h1>My Todo Tracker</h1>
+    <button id="sign-out-btn" onclick="signOut()">Sign out</button>
   </header>
 
   <main class="board">
@@ -71,50 +72,25 @@
     </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  <script src="app.js"></script>
-
   <!-- Undo Toast -->
   <div id="undo-toast">
     <span id="undo-toast-msg"></span>
     <button onclick="undoDelete()">Undo</button>
   </div>
 
-  <!-- Password Screen -->
+  <!-- Sign-in Screen -->
   <div id="password-screen">
     <div class="password-box">
       <h2>My Todo Tracker</h2>
-      <input type="password" id="password-input" placeholder="Enter password" />
+      <input type="email" id="email-input" placeholder="Email" autocomplete="username" />
+      <input type="password" id="password-input" placeholder="Password" autocomplete="current-password" />
       <p id="password-error"></p>
-      <button onclick="checkPassword()">Unlock</button>
+      <button onclick="signIn()">Sign in</button>
     </div>
   </div>
-
-  <script>
-    (function() {
-      if (sessionStorage.getItem('auth') === 'true') {
-        document.getElementById('password-screen').style.display = 'none';
-      } else {
-        document.body.style.overflow = 'hidden';
-      }
-      document.getElementById('password-input').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') checkPassword();
-      });
-    })();
-
-    function checkPassword() {
-      const input = document.getElementById('password-input').value;
-      if (input === '2319') {
-        sessionStorage.setItem('auth', 'true');
-        document.getElementById('password-screen').style.display = 'none';
-        document.body.style.overflow = '';
-      } else {
-        document.getElementById('password-error').textContent = 'Incorrect password. Try again.';
-        document.getElementById('password-input').value = '';
-        document.getElementById('password-input').focus();
-      }
-    }
-  </script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

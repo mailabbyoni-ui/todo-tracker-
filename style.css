@@ -16,6 +16,25 @@ header {
   color: white;
   padding: 18px 24px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#sign-out-btn {
+  background: transparent;
+  color: #c7c9e0;
+  border: 1px solid #3b3d5c;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+#sign-out-btn:hover {
+  color: white;
+  border-color: #6366f1;
 }
 
 header h1 {
@@ -405,7 +424,6 @@ header h1 {
   font-size: 1rem;
   outline: none;
   text-align: center;
-  letter-spacing: 4px;
   margin-bottom: 8px;
   font-family: inherit;
   transition: border-color 0.15s;

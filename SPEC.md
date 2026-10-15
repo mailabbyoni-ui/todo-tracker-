@@ -35,13 +35,14 @@ Previously managed tasks in iOS Notes using four manual columns: Not Started, In
 
 ### Sync & Storage
 - Tasks stored in Firebase Firestore
+- No automatic seeding — the app never writes tasks on its own
 - Real-time sync across all devices — changes appear instantly on phone and computer
-- No login required
 
 ### Security
-- Password protected (client-side) — session persists until browser is closed
+- Firebase Authentication (email/password) — stays signed in on each device, with a Sign out button
+- Sign-up disabled in Firebase; only the owner's account exists
+- Firestore rules only allow the owner's account to read or write tasks
 - Firebase API key restricted to GitHub Pages domain only
-- Firestore rules set to allow read/write with no expiry
 
 ### Mobile Experience
 - Horizontal swipe between columns (Trello-style)
